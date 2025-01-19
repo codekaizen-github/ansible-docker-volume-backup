@@ -1,0 +1,8 @@
+---
+- name: Create Docker Volumes
+  hosts: "{{ hosts_override | default('docker_volumes') }}"
+
+  tasks:
+    - name: Ping
+      ansible.builtin.ping:
+        data: "Pong"

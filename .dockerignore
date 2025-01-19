@@ -1,0 +1,11 @@
+.git
+.devcontainer
+.dockerignore
+.env
+.env.example
+.gitignore
+docker-compose.dev.yml
+Dockerfile
+ansible/inventory
+ignore
+examples

@@ -1,0 +1,11 @@
+services:
+    ansible:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sleep infinity
+        volumes:
+            - ${HOST_AUTHORIZED_SSH_PRIVATE_KEY}:/root/.ssh/id_rsa
+            - ./:/workspace
+            - ${HOST_ANSIBLE_INVENTORY_FILE}:/workspace/ansible/inventory/hosts.yml
+        network_mode: host
