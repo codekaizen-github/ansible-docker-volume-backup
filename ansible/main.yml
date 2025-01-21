@@ -1,4 +1,4 @@
 - name: Main
-  ansible.builtin.import_playbook: ping.yml
+  ansible.builtin.import_playbook: backup.yml
   vars:
     hosts_override: all

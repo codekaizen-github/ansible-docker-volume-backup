@@ -1,0 +1,54 @@
+- name: Assert required vars are defined
+  ansible.builtin.assert:
+    that:
+      - host_dest_path is defined
+      - host_dest_mode is defined
+      - host_dest_owner is defined
+      - host_dest_group is defined
+      - backup_container_name is defined
+      - backup_image is defined
+      - source_volume_name is defined
+      - backup_container_volume_path is defined
+      - backup_container_dest_path is defined
+      - backup_file_name is defined
+
+- name: Set the default command
+  set_fact:
+    _default_backup_container_command: '/bin/sh -c "tar -cvzf {{ backup_container_dest_path }}/{{ backup_file_name  }} -C {{ backup_container_volume_path }} ."'
+
+- name: Ensure bind mounted backup folder exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ host_dest_path }}"
+    mode: "{{ host_dest_mode }}"
+    owner: "{{ host_dest_owner }}"
+    group: "{{ host_dest_group }}"
+    # recurse: yes
+
+- name: Echo the backup command
+  ansible.builtin.debug:
+    msg: "{{ backup_container_command | default(_default_backup_container_command) }}"
+
+- name: Create the backup container
+  ansible.builtin.docker_container:
+    name: "{{ backup_container_name }}"
+    image: "{{ backup_image }}"
+    volumes:
+      - "{{ source_volume_name }}:{{ backup_container_volume_path }}"
+      - "{{ host_dest_path }}:{{ backup_container_dest_path }}"
+    command: "{{ backup_container_command | default(_default_backup_container_command) }}"
+    # Cannot detach because we need to block and wait for the backup to complete
+    detach: no
+    state: started
+    restart_policy: no
+    auto_remove: yes
+    keep_volumes: no
+
+- name: Copy file from the remote host to local
+  ansible.builtin.fetch:
+    src: "{{ host_dest_path }}/{{ backup_file_name }}"
+    dest: "{{ local_dest_path }}/{{ backup_file_name }}"
+    flat: yes
+    fail_on_missing: yes
+    validate_checksum: yes
+    checksum_algorithm: sha256

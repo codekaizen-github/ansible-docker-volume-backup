@@ -1,0 +1,29 @@
+---
+- name: Backup Docker Volumes
+  hosts: "{{ hosts_override | default('docker_volume_backup') }}"
+
+  tasks:
+      - name: Set UUID
+        set_fact:
+            _uuid: "{{ ansible_date_time.iso8601_micro | to_uuid }}"
+
+      - name: Create Docker containers
+        ansible.builtin.include_tasks:
+            file: tasks/backup.yml
+        loop: "{{ docker_volume_backups }}"
+        loop_control:
+            loop_var: docker_volume_backup
+        vars:
+            host_dest_path: "{{ docker_volume_backup.host_dest_path | default('/tmp/backup_dest') }}"
+            host_dest_mode: "{{ docker_volume_backup.host_dest_mode | default('0755') }}"
+            host_dest_owner: "{{ docker_volume_backup.host_dest_owner | default(ansible_user) }}"
+            host_dest_group: "{{ docker_volume_backup.host_dest_group | default(ansible_user) }}"
+            # Default to a random timestamp based UUID
+            backup_container_name: "{{ docker_volume_backup.backup_container_name | default(_uuid) }}"
+            backup_image: "{{ docker_volume_backup.backup_image | default('alpine:latest') }}"
+            source_volume_name: "{{ docker_volume_backup.source_volume_name  }}"
+            backup_container_volume_path: "{{ docker_volume_backup.backup_container_volume_path | default('/tmp/backup_source') }}"
+            backup_container_dest_path: "{{ docker_volume_backup.backup_container_dest_path | default('/tmp/backup_dest') }}"
+            backup_file_name: "{{ docker_volume_backup.backup_file_name | default('backup.tar.gz') }}"
+            backup_container_command: "{{ docker_volume_backup.backup_container_command | default(_default_backup_container_command) }}"
+            local_dest_path: "{{ docker_volume_backup.local_dest_path | default('/tmp') }}"
