@@ -1,6 +1,6 @@
 ---
 - name: Backup Docker Volumes
-  hosts: "{{ hosts_override | default('docker_volume_backup') }}"
+  hosts: "{{ _hosts_override | default('all') }}"
 
   tasks:
       - name: Set UUID
