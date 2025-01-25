@@ -11,6 +11,7 @@
       - backup_container_source_dir_path is defined
       - backup_container_dest_dir_path is defined
       - local_dest_file_path is defined
+      - auto_remove is defined
 
 - name: Set the filename (basename) of the host_dest_file_path
   set_fact:
@@ -23,15 +24,6 @@
 - name: Set the default command
   set_fact:
     _default_backup_container_command: '/bin/sh -c "tar -cvzf {{ _backup_container_dest_file_path }} -C {{ backup_container_source_dir_path }} ."'
-
-# - name: Ensure bind mounted backup folder exists
-#   ansible.builtin.file:
-#     state: directory
-#     path: "{{ host_dest_file_path }}"
-#     mode: "{{ host_dest_mode }}"
-#     owner: "{{ host_dest_owner }}"
-#     group: "{{ host_dest_group }}"
-#     # recurse: yes
 
 - name: Echo the backup command
   ansible.builtin.debug:
@@ -49,7 +41,7 @@
     detach: no
     state: started
     restart_policy: no
-    auto_remove: no
+    auto_remove: "{{ auto_remove }}"
     keep_volumes: no
 
 - name: Copy file from the remote host to local

@@ -27,3 +27,4 @@
             # backup_file_name: "{{ docker_volume_backup.backup_file_name | default('backup.tar.gz') }}"
             backup_container_command: "{{ docker_volume_backup.backup_container_command }}"
             local_dest_file_path: "{{ docker_volume_backup.local_dest_file_path | default('/tmp/backup_dest_' + _uuid + '.tar.gz') }}"
+            auto_remove: "{{ docker_volume_backup.auto_remove | default(true) }}"
