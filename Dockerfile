@@ -1,9 +1,8 @@
 FROM alpine:3 AS base
 
-ARG OWNER=codekaizen-github
-ARG REPO=ansible-docker-deploy
+ARG LABEL_ORG_OPENCONTAINERS_IMAGE_SOURCE=""
 
-LABEL org.opencontainers.image.source=https://github.com/${OWNER}/${REPO}
+LABEL org.opencontainers.image.source=${LABEL_ORG_OPENCONTAINERS_IMAGE_SOURCE}
 
 ENV ANSIBLE_CONFIG=/workspace/ansible/ansible.cfg
 
